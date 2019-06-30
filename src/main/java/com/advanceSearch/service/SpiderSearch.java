@@ -5,10 +5,12 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.advanceSearch.utils.MyThreadPool;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import com.advanceSearch.entity.KeyWord;
@@ -22,6 +24,12 @@ import com.advanceSearch.utils.Rule;
  */
 @Service
 public class SpiderSearch {
+	@Bean
+	public MyThreadPool getMyThreadPool() {
+		return new MyThreadPool(40);
+	}
+	@Autowired
+	private MyThreadPool myThreadPool;
 	@Autowired
 	private AdvanceSearchService advanceSearchService;
 
@@ -34,7 +42,7 @@ public class SpiderSearch {
 	public List<SearchItem> searchByKey(String keyWord) throws UnsupportedEncodingException{
 		String[] enables=Config.defaultRule.enables.toArray(new String[Config.defaultRule.enables.size()]);
 //    	String[] enables = {"bing"};
-		int pageTotalNum =1;
+		int pageTotalNum =2;
 		return searchAndStore(keyWord, pageTotalNum, enables);
 
 	}
@@ -43,15 +51,23 @@ public class SpiderSearch {
 	 *
 	 * @param keyword 关键字
 	 * @param pageTotalNum 搜索引擎返回的页码数
-	 * @param engineNames 搜索引擎，，目前有bing，sougou
+	 * @param engineNames 搜索引擎，，目前有bing，sougou,baidu
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
 	public List<SearchItem> searchAndStore(String keyword,int pageTotalNum,String... engineNames) throws UnsupportedEncodingException {
 		List<SearchItem> searchItems = new ArrayList<SearchItem>();
 		SearchItem searchItem = new SearchItem();
+		Runnable task = new Runnable() {
+			@Override
+			public void run() {
+
+			}
+		};
 		for(String engineName:engineNames){
 //   			searchItem = doSearchAndStore(keyword, pageTotalNum, engineName)
+
+			myThreadPool.execute(task);
 			searchItems.addAll(doSearchAndStore(keyword, pageTotalNum, engineName));
 		}
 
@@ -69,9 +85,10 @@ public class SpiderSearch {
 	public List<SearchItem> doSearchAndStore(String keyword,int pageCount,String engineName) throws UnsupportedEncodingException{
 		SearchItem searchItem = new SearchItem();
 		List<SearchItem> searchItems = new ArrayList<SearchItem>();
+
 		Rule.ExtractRule eRule=Config.defaultRule.getExtractRule(engineName);
 		System.out.println(eRule);
-		long t = System.currentTimeMillis();
+
 
 
 		for(int pageNum=1;pageNum<=pageCount;pageNum++){
@@ -89,6 +106,7 @@ public class SpiderSearch {
 
 			String url=sb.toString();
 			System.out.println("sb: " + url);
+			long t = System.currentTimeMillis();
 			try {
 				Document doc= HttpUtils.fetchDoc(url);
 				Elements itemEls=doc.select(eRule.itemCSS);
@@ -98,7 +116,7 @@ public class SpiderSearch {
 					resultNum++;
 
 					Element element_a = element.select(eRule.titleCSS).first();
-					System.out.println(element_a);
+//					System.out.println(element_a);
 					if(element_a == null) {
 						continue;
 					}
@@ -115,18 +133,19 @@ public class SpiderSearch {
 
 					content = element_p.text().trim();
 
-					System.out.println("resultNum: " + resultNum);
+//					System.out.println("resultNum: " + resultNum);
 //	                    SearchItem searchItem = new SearchItem(title, link, content);
 					searchItem.setTitle(title);
 					searchItem.setContent(content);
 					searchItem.setUrl(link);
 					searchItem.setSearchKey(keyword);
 
+					long dbt = System.currentTimeMillis();
 					//此处添加数据库相关操作
 					advanceSearchService.addSearchItem(searchItem);
-
-					System.out.println(searchItem);
-					System.out.println(engineName + "\n");
+					System.out.println("存入数据库时间：" + (System.currentTimeMillis()-dbt));
+//					System.out.println(searchItem);
+//					System.out.println(engineName + "\n");
 					searchItems.add(searchItem);
 
 				}
@@ -134,7 +153,7 @@ public class SpiderSearch {
 				System.out.println(e.getMessage());
 				e.printStackTrace();
 			}
-			System.out.println("--t2"+(System.currentTimeMillis()-t));
+			System.out.println("消耗时间：："+(System.currentTimeMillis()-t));
 		}
 
 		//关键字只存储一次
