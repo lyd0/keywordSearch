@@ -139,11 +139,12 @@ public class SpiderSearch {
 					searchItem.setContent(content);
 					searchItem.setUrl(link);
 					searchItem.setSearchKey(keyword);
-
-					long dbt = System.currentTimeMillis();
+					System.out.println("********************************");
+//					long dbt = System.currentTimeMillis();
 					//此处添加数据库相关操作
-					advanceSearchService.addSearchItem(searchItem);
-					System.out.println("存入数据库时间：" + (System.currentTimeMillis()-dbt));
+					//advanceSearchService.addSearchItem(searchItem);
+
+//					System.out.println("存入数据库时间：" + (System.currentTimeMillis()-dbt));
 //					System.out.println(searchItem);
 //					System.out.println(engineName + "\n");
 					searchItems.add(searchItem);
@@ -156,6 +157,8 @@ public class SpiderSearch {
 			System.out.println("消耗时间：："+(System.currentTimeMillis()-t));
 		}
 
+		//所有结果提交到数据库
+		advanceSearchService.addSearchItems(searchItems);
 		//关键字只存储一次
 		if(advanceSearchService.findKey(keyword)!=null){
 			return searchItems;

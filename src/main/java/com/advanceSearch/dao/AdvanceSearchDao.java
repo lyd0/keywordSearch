@@ -2,12 +2,7 @@ package com.advanceSearch.dao;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import com.advanceSearch.entity.KeyWord;
 import com.advanceSearch.entity.SearchItem;
@@ -24,6 +19,12 @@ import org.springframework.stereotype.Repository;
 public interface AdvanceSearchDao {
 	@Insert("insert into searchitem(title,content,url,searchKey) values(#{title},#{content},#{url},#{searchKey})")
 	int addSearchItem(SearchItem searchItem);
+
+//	@Insert("insert into searchitem(title,content,url,searchKey) values(#{title},#{content},#{url},#{searchKey})")
+//	int addSearchItems(List<SearchItem> searchItems);
+
+	@InsertProvider(type = SearchItemsProvider.class, method = "insertAll")
+	void batchSearchItemList(@Param("list") List<SearchItem> searchItems);
 
 	//每次准备搜索爬取时先进行关键字判断，如果已存在该关键字，则可以直接在本地查询；若需要重新查询，则更新数据库中已有的数据
 	//关键字模糊匹配 内容表  并进行统计  CONCAT('%',',${cityId},','%' )
