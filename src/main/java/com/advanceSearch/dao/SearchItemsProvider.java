@@ -14,6 +14,8 @@ public class SearchItemsProvider {
         sb.append("insert into searchitem");
         sb.append("(title,content,url,searchKey) ");
         sb.append("values");
+//        System.out.println("0-0-0"+sb);
+        System.out.println("searchItems ::: " + searchItems);
         MessageFormat mf = new MessageFormat("(#'{'list[{0}].title},#'{'list[{0}].content},#'{'list[{0}].url},#'{'list[{0}].searchKey})");
 
         for (int i = 0; i<searchItems.size(); i++) {
@@ -22,7 +24,7 @@ public class SearchItemsProvider {
                 sb.append(",");
             }
         }
-        System.out.println(sb);
+//        System.out.println("0-0-1"+sb);
         return sb.toString();
     }
 }

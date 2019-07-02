@@ -3,10 +3,13 @@ package com.advanceSearch.controller;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.advanceSearch.entity.KeyWord;
@@ -15,7 +18,7 @@ import com.advanceSearch.service.AdvanceSearchService;
 import com.advanceSearch.service.SpiderSearch;
 
 
-@RestController
+@Controller
 @RequestMapping("views/")
 public class AdvanceSearchController {
     @Autowired
@@ -28,24 +31,30 @@ public class AdvanceSearchController {
      * @param key
      * @return
      */
-    @RequestMapping(value="advanceSearch/{key}")
-    public List<SearchItem> searchAndCrawling(@PathVariable String key){
+    @RequestMapping(value="advanceSearch")
+    public String searchAndCrawling(@RequestParam("question_text") String key, Map map){
         List<SearchItem> list = new ArrayList<SearchItem>();
         int flag=1; //flag=1,该关键词没搜索过，0代表搜索过
         if(flag != advanceSearchService.judgeKey(key)){
-            advanceSearchService.deleteSearchItem(key);
+            list = advanceSearchService.query(key);
+            map.put("contents",list);
+            return "index";
         }
         try {
             long t = System.currentTimeMillis();
             spiderSearch.searchByKey(key); //抓取
             System.out.println("--"+(System.currentTimeMillis()-t));
             list = advanceSearchService.query(key);
-        } catch (UnsupportedEncodingException e) {
+            map.put("contents",list);
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return list;
+        return "index";
     }
+
+
+
 
     @RequestMapping(value="advanceSearch/findAllSearch")
     public List<SearchItem> findAllSearch(){

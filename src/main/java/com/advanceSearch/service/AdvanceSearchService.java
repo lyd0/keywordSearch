@@ -28,9 +28,9 @@ public class AdvanceSearchService {
 		return addcount;
 	}
 
-	public void addSearchItems(List<SearchItem> searchItems){
-		advanceSearchDao.batchSearchItemList(searchItems);
-	}
+//	public void addSearchItems(List<SearchItem> searchItems){
+//		advanceSearchDao.batchSearchItemList(searchItems);
+//	}
 
 	public List<SearchItem> findAllSearch(){
 		List<SearchItem> list = new ArrayList<SearchItem>();
