@@ -1,8 +1,7 @@
 {
   "enable":[
-    "bing",
-    "sogou",
-    "baidu"
+    "baidu",
+    "sogou"
   ],
   "rules":[
     {

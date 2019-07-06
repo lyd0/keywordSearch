@@ -44,34 +44,44 @@ public class SpiderSearch {
 //    	String[] enables = {"bing"};
 		int pageTotalNum =1;
 		return searchAndStore(keyWord, pageTotalNum, enables);
-
 	}
 
 	/**
 	 *
 	 * @param keyword 关键字
 	 * @param pageTotalNum 搜索引擎返回的页码数
-	 * @param engineNames 搜索引擎，，目前有bing，sougou,baidu
+	 * @param engineNames 搜索引擎，，目前有bing, baidu
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
 	public List<SearchItem> searchAndStore(String keyword,int pageTotalNum,String... engineNames) throws UnsupportedEncodingException {
 		List<SearchItem> searchItems = new ArrayList<SearchItem>();
 		SearchItem searchItem = new SearchItem();
-		Runnable task = new Runnable() {
-			@Override
-			public void run() {
 
-			}
-		};
-		for(String engineName:engineNames){
+//		Runnable task = new Runnable() {
+//			@Override
+//			public void run() {
+//				try {
+//					searchItems.addAll(doSearchAndStore(keyword, pageTotalNum, "baidu"));
+//				}catch (UnsupportedEncodingException e) {
+//					e.printStackTrace();
+//				}
+//
+//			}
+//		};
+//		myThreadPool.execute(task);
+
+//		searchItems.addAll(doSearchAndStore(keyword, pageTotalNum, "bing"));
+//		for(String engineName:engineNames){
+		//单个 不启用这句
 //   			searchItem = doSearchAndStore(keyword, pageTotalNum, engineName)
 
-			myThreadPool.execute(task);
-			searchItems.addAll(doSearchAndStore(keyword, pageTotalNum, engineName));
-		}
 
-		return searchItems;
+			//多个 只用这句
+			searchItems.addAll(doSearchAndStore(keyword, pageTotalNum, engineName));
+//		}
+
+		return new ArrayList<>();
 	}
 
 	/**
@@ -88,13 +98,9 @@ public class SpiderSearch {
 
 		Rule.ExtractRule eRule=Config.defaultRule.getExtractRule(engineName);
 
-
-
-
 				for(int pageNum=1;pageNum<=pageCount;pageNum++){
 					StringBuilder sb=new StringBuilder();
 					int pageCode=pageNum*eRule.pageMulti+eRule.pageOffset;
-					System.out.println("pageCode : " + pageCode);
 					try {
 						sb.append(eRule.baseURL)
 								.append(eRule.queryParam)
@@ -111,55 +117,43 @@ public class SpiderSearch {
 
 					String url=sb.toString();
 					System.out.println("sb: " + url);
-					long t = System.currentTimeMillis();
+
 					try {
 						Document doc= HttpUtils.fetchDoc(url);
 						Elements itemEls=doc.select(eRule.itemCSS);
 						int resultNum = 0;
 
-						for(Element element: itemEls) {
-							resultNum++;
+						System.out.println(itemEls);
 
+						for(Element element: itemEls) {
+							long t = System.currentTimeMillis();
 							Element element_a = element.select(eRule.titleCSS).first();
-//					System.out.println(element_a);
 							if(element_a == null) {
 								continue;
 							}
-
 							String title = element_a.text().trim();
-
 							String link = element_a.attr("href");
-
 							String content = null;
 							Element element_p = element.select(eRule.contentCSS).first();
 							if(element_p == null) {
 								continue;
 							}
-
 							content = element_p.text().trim();
 
-//					System.out.println("resultNum: " + resultNum);
 //	                    SearchItem searchItem = new SearchItem(title, link, content);
 							searchItem.setTitle(title);
 							searchItem.setContent(content);
 							searchItem.setUrl(link);
 							searchItem.setSearchKey(keyword);
-//					System.out.println("********************************");
-//					long dbt = System.currentTimeMillis();
+							System.out.println("解析完一个消耗时间：："+(System.currentTimeMillis()-t));
 							//此处添加数据库相关操作
 							advanceSearchService.addSearchItem(searchItem);
-
-//					System.out.println("存入数据库时间：" + (System.currentTimeMillis()-dbt));
-//					System.out.println(searchItem);
-//					System.out.println(engineName + "\n");
 							searchItems.add(searchItem);
-							System.out.println("searchItem" + searchItem);
 						}
 					} catch (Exception e) {
-						System.out.println(e.getMessage());
 						e.printStackTrace();
 					}
-					System.out.println("消耗时间：："+(System.currentTimeMillis()-t));
+
 				}
 
 
