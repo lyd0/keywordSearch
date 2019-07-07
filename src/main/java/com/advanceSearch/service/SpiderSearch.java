@@ -58,18 +58,7 @@ public class SpiderSearch {
 		List<SearchItem> searchItems = new ArrayList<SearchItem>();
 		SearchItem searchItem = new SearchItem();
 
-//		Runnable task = new Runnable() {
-//			@Override
-//			public void run() {
-//				try {
-//					searchItems.addAll(doSearchAndStore(keyword, pageTotalNum, "baidu"));
-//				}catch (UnsupportedEncodingException e) {
-//					e.printStackTrace();
-//				}
-//
-//			}
-//		};
-//		myThreadPool.execute(task);
+
 
 //		searchItems.addAll(doSearchAndStore(keyword, pageTotalNum, "bing"));
 //		for(String engineName:engineNames){
@@ -78,10 +67,12 @@ public class SpiderSearch {
 
 
 			//多个 只用这句
-			searchItems.addAll(doSearchAndStore(keyword, pageTotalNum, engineName));
+//			searchItems.addAll(doSearchAndStore(keyword, pageTotalNum, "baidu"));
 //		}
 
-		return new ArrayList<>();
+		doSearchAndStore(keyword, pageTotalNum, "baidu");
+
+		return searchItems;
 	}
 
 	/**
@@ -98,63 +89,26 @@ public class SpiderSearch {
 
 		Rule.ExtractRule eRule=Config.defaultRule.getExtractRule(engineName);
 
-				for(int pageNum=1;pageNum<=pageCount;pageNum++){
-					StringBuilder sb=new StringBuilder();
-					int pageCode=pageNum*eRule.pageMulti+eRule.pageOffset;
-					try {
-						sb.append(eRule.baseURL)
-								.append(eRule.queryParam)
-								.append("=")
-								.append(URLEncoder.encode(keyword,"utf-8"))
-								.append("&")
-								.append(eRule.pageParam)
-								.append("=")
-								.append(pageCode);
-					}catch (UnsupportedEncodingException e) {
-						e.printStackTrace();
-					}
+		parseDoc(keyword,1,engineName,eRule,searchItem,searchItems);
 
-
-					String url=sb.toString();
-					System.out.println("sb: " + url);
-
-					try {
-						Document doc= HttpUtils.fetchDoc(url);
-						Elements itemEls=doc.select(eRule.itemCSS);
-						int resultNum = 0;
-
-						System.out.println(itemEls);
-
-						for(Element element: itemEls) {
-							long t = System.currentTimeMillis();
-							Element element_a = element.select(eRule.titleCSS).first();
-							if(element_a == null) {
-								continue;
-							}
-							String title = element_a.text().trim();
-							String link = element_a.attr("href");
-							String content = null;
-							Element element_p = element.select(eRule.contentCSS).first();
-							if(element_p == null) {
-								continue;
-							}
-							content = element_p.text().trim();
-
-//	                    SearchItem searchItem = new SearchItem(title, link, content);
-							searchItem.setTitle(title);
-							searchItem.setContent(content);
-							searchItem.setUrl(link);
-							searchItem.setSearchKey(keyword);
-							System.out.println("解析完一个消耗时间：："+(System.currentTimeMillis()-t));
-							//此处添加数据库相关操作
-							advanceSearchService.addSearchItem(searchItem);
-							searchItems.add(searchItem);
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-
+		Runnable task = new Runnable() {
+			@Override
+			public void run() {
+				try {
+					parseDoc(keyword,2,engineName,eRule,searchItem,searchItems);
+				}catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
 				}
+
+			}
+		};
+		myThreadPool.execute(task);
+
+
+//				for(int pageNum=1;pageNum<=pageCount;pageNum++){
+
+
+//				}
 
 
 
@@ -172,4 +126,62 @@ public class SpiderSearch {
 
 		return searchItems;
 	}
+
+	public void parseDoc(String keyword,int pageNum,String engineName,Rule.ExtractRule eRule,SearchItem searchItem,List<SearchItem> searchItems) throws UnsupportedEncodingException{
+		StringBuilder sb=new StringBuilder();
+		int pageCode=pageNum*eRule.pageMulti+eRule.pageOffset;
+		try {
+			sb.append(eRule.baseURL)
+					.append(eRule.queryParam)
+					.append("=")
+					.append(URLEncoder.encode(keyword,"utf-8"))
+					.append("&")
+					.append(eRule.pageParam)
+					.append("=")
+					.append(pageCode);
+		}catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+
+
+		String url=sb.toString();
+		System.out.println("sb: " + url);
+
+		try {
+			Document doc= HttpUtils.fetchDoc(url);
+			Elements itemEls=doc.select(eRule.itemCSS);
+			int resultNum = 0;
+
+//						System.out.println(itemEls);
+
+			for(Element element: itemEls) {
+				long t = System.currentTimeMillis();
+				Element element_a = element.select(eRule.titleCSS).first();
+				if(element_a == null) {
+					continue;
+				}
+				String title = element_a.text().trim();
+				String link = element_a.attr("href");
+				String content = null;
+				Element element_p = element.select(eRule.contentCSS).first();
+				if(element_p == null) {
+					continue;
+				}
+				content = element_p.text().trim();
+
+//	                    SearchItem searchItem = new SearchItem(title, link, content);
+				searchItem.setTitle(title);
+				searchItem.setContent(content);
+				searchItem.setUrl(link);
+				searchItem.setSearchKey(keyword);
+				System.out.println("解析完一个消耗时间：："+(System.currentTimeMillis()-t));
+				//此处添加数据库相关操作
+				advanceSearchService.addSearchItem(searchItem);
+				searchItems.add(searchItem);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 }
