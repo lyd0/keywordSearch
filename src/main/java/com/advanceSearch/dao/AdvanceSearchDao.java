@@ -31,7 +31,8 @@ public interface AdvanceSearchDao {
 	@Select("select count(*) from searchitem where title like CONCAT('%',#{key},'%' )")
 	List<SearchItem> matchByKey(@Param("key") String key);
 
-
+	@Select("select id,content,url from searchitem where searchKey = #{key} and isRead = 0")
+	List<SearchItem> findUnreadSearchItem(@Param("key") String key);
 	@Select("select * from searchitem where searchKey = #{key}")
 	List<SearchItem> findByKey(@Param("key") String key);
 
@@ -54,11 +55,18 @@ public interface AdvanceSearchDao {
 	@Select("select * from keyword where keyWord = #{k}")
 	KeyWord findKey(@Param("k") String key);
 
+	@Update("update searchitem set isRead = 1 where id = #{id}")
+	void updateIsRead(@Param("id") int id);
+
+	@Update("UPDATE searchitem SET isRead = 0 WHERE searchKey = #{key}")
+	void setAllNotRead(@Param("key") String key);
+
 	@Update("update searchitem set title=#{Item.title},content=#{Item.content},url=#{Item.url} where title like CONCAT('%',',#{key},','%' )")
 	int updateSearchItem(@Param("Item") SearchItem searchItem,@Param("key") String key);
 
 	//根据关键字删除表中数据
 	@Delete("delete from searchitem where searchKey = #{key}")
 	int deleteSearchItem(String key);
+
 
 }

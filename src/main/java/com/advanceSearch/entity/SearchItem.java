@@ -7,6 +7,7 @@ public class SearchItem {
 	private String content; // 内容
 	private String url; //网址链接
 	private String searchKey;//搜索关键字
+	private int id;
 
 	public SearchItem(){
 
@@ -36,6 +37,8 @@ public class SearchItem {
 	public void setUrl(String url) {
 		this.url = url;
 	}
+	public int getId(){ return this.id; }
+	public void setId(int id) { this.id = id; }
 
 	public JSONObject toJSON(){
 		JSONObject jo=new JSONObject();

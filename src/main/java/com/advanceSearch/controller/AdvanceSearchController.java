@@ -33,19 +33,36 @@ public class AdvanceSearchController {
      */
     @RequestMapping(value="advanceSearch")
     public String searchAndCrawling(@RequestParam("question_text") String key, Map map){
+
+        if("".equals(key.trim())) {
+            return "index";
+        }
+
         List<SearchItem> list = new ArrayList<SearchItem>();
         int flag=1; //flag=1,该关键词没搜索过，0代表搜索过
         if(flag != advanceSearchService.judgeKey(key)){
+
             list = advanceSearchService.query(key);
-            map.put("contents",list);
+            if(list.size() == 0 || list.size()<3) {
+                try {
+                    spiderSearch.searchByKey(key); //抓取
+
+                } catch (UnsupportedEncodingException e) {
+
+                }
+
+            }
+            SearchItem unreadSearchItem = advanceSearchService.getUnreadSearchItem(key);
+            map.put("content",unreadSearchItem);
             return "index";
         }
+
         try {
             long t = System.currentTimeMillis();
             spiderSearch.searchByKey(key); //抓取
             System.out.println("--"+(System.currentTimeMillis()-t));
-            list = advanceSearchService.query(key);
-            map.put("contents",list);
+            SearchItem unreadSearchItem = advanceSearchService.getUnreadSearchItem(key);
+            map.put("content",unreadSearchItem);
         } catch (Exception e) {
             e.printStackTrace();
         }

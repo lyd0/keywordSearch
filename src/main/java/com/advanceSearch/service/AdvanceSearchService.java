@@ -93,4 +93,19 @@ public class AdvanceSearchService {
 
 	}
 
+	//返回一条未读的
+	public SearchItem getUnreadSearchItem(String key) {
+		List<SearchItem> searchItems = advanceSearchDao.findUnreadSearchItem(key);
+		if(searchItems.size() == 0) {
+			advanceSearchDao.setAllNotRead(key);
+			searchItems = advanceSearchDao.findUnreadSearchItem(key);
+		}
+		setIsRead(searchItems.get(0).getId());
+		return searchItems.get(0);
+	}
+
+	public void setIsRead(int id) {
+		System.out.print(id);
+		advanceSearchDao.updateIsRead(id);
+	}
 }
