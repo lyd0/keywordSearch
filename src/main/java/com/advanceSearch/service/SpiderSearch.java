@@ -70,7 +70,7 @@ public class SpiderSearch {
 //			searchItems.addAll(doSearchAndStore(keyword, pageTotalNum, "baidu"));
 //		}
 
-		doSearchAndStore(keyword, pageTotalNum, "baidu");
+		doSearchAndStore(keyword, pageTotalNum, "bing");
 
 		return searchItems;
 	}
@@ -87,15 +87,17 @@ public class SpiderSearch {
 		SearchItem searchItem = new SearchItem();
 		List<SearchItem> searchItems = new ArrayList<SearchItem>();
 
-		Rule.ExtractRule eRule=Config.defaultRule.getExtractRule(engineName);
+		Rule.ExtractRule eRule1=Config.defaultRule.getExtractRule("baidu");
+		Rule.ExtractRule eRule2=Config.defaultRule.getExtractRule("bing");
+		Rule.ExtractRule eRule3=Config.defaultRule.getExtractRule("sogou");
 
-		parseDoc(keyword,1,engineName,eRule,searchItem,searchItems);
+		parseDoc(keyword,1,"baidu",eRule1,searchItem,searchItems);
 
 		Runnable task = new Runnable() {
 			@Override
 			public void run() {
 				try {
-					parseDoc(keyword,2,engineName,eRule,searchItem,searchItems);
+					parseDoc(keyword,1,"bing",eRule2,searchItem,searchItems);
 				}catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
 				}
@@ -103,6 +105,19 @@ public class SpiderSearch {
 			}
 		};
 		myThreadPool.execute(task);
+		Runnable task2 = new Runnable() {
+			@Override
+			public void run() {
+				try {
+					parseDoc(keyword,1,"sogou",eRule3,searchItem,searchItems);
+				}catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
+
+			}
+		};
+		myThreadPool.execute(task2);
+
 
 
 //				for(int pageNum=1;pageNum<=pageCount;pageNum++){
@@ -152,7 +167,8 @@ public class SpiderSearch {
 			Elements itemEls=doc.select(eRule.itemCSS);
 			int resultNum = 0;
 
-//						System.out.println(itemEls);
+//			System.out.print(doc);
+//			System.out.println(itemEls);
 
 			for(Element element: itemEls) {
 				long t = System.currentTimeMillis();

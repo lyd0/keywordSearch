@@ -7,10 +7,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.advanceSearch.entity.KeyWord;
 import com.advanceSearch.entity.SearchItem;
@@ -31,7 +28,7 @@ public class AdvanceSearchController {
      * @param key
      * @return
      */
-    @RequestMapping(value="advanceSearch")
+    @PostMapping(value="advanceSearch")
     public String searchAndCrawling(@RequestParam("question_text") String key, Map map){
 
         if("".equals(key.trim())) {
@@ -54,6 +51,8 @@ public class AdvanceSearchController {
             }
             SearchItem unreadSearchItem = advanceSearchService.getUnreadSearchItem(key);
             map.put("content",unreadSearchItem);
+            map.put("question_text",key);
+
             return "index";
         }
 

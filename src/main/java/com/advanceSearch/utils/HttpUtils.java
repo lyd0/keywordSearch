@@ -15,7 +15,7 @@ public class HttpUtils {
             try {
                 long t = System.currentTimeMillis();
                 doc = Jsoup.connect(url)
-                        .userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3704.400 QQBrowser/10.4.3587.400").get();
+                        .userAgent("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36").get();
                 System.out.println(System.currentTimeMillis()-t);
                 return doc;
             } catch (IOException e) {

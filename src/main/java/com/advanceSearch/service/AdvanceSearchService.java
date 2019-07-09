@@ -100,6 +100,9 @@ public class AdvanceSearchService {
 			advanceSearchDao.setAllNotRead(key);
 			searchItems = advanceSearchDao.findUnreadSearchItem(key);
 		}
+		if(searchItems.size() == 0) {
+			return null;
+		}
 		setIsRead(searchItems.get(0).getId());
 		return searchItems.get(0);
 	}

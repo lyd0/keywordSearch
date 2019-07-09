@@ -1,6 +1,7 @@
 {
   "enable":[
     "baidu",
+    "bing",
     "sogou"
   ],
   "rules":[
@@ -23,7 +24,7 @@
       "pageOffset":0,
       "name":"sogou",
       "itemCSS":"div.rb,div.vrwrap",
-      "titleCSS":"h3>a",
+      "titleCSS":"h3[class=vrTitle]>a",
       "contentCSS":"p,div.ft"
     },
     {
