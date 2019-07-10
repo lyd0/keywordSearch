@@ -120,19 +120,6 @@ public class SpiderSearch {
 		};
 		myThreadPool.execute(task2);
 
-
-
-//				for(int pageNum=1;pageNum<=pageCount;pageNum++){
-
-
-//				}
-
-
-
-
-		//所有结果提交到数据库
-//		System.out.println("searchItems" + searchItems);
-//		advanceSearchService.addSearchItems(searchItems);
 		//关键字只存储一次
 		if(advanceSearchService.findKey(keyword)!=null){
 			return searchItems;
@@ -201,7 +188,4 @@ public class SpiderSearch {
 			e.printStackTrace();
 		}
 	}
-
-
-
 }
