@@ -19,6 +19,8 @@ import com.advanceSearch.utils.Config;
 import com.advanceSearch.utils.HttpUtils;
 import com.advanceSearch.utils.Rule;
 
+import org.jsoup.Jsoup;
+
 /**
  *
  */
@@ -199,5 +201,7 @@ public class SpiderSearch {
 			e.printStackTrace();
 		}
 	}
+
+
 
 }
