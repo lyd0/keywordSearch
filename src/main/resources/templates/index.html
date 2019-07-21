@@ -18,13 +18,14 @@
             <div class="form-group">
                 <label for="question_text">请输入问题</label>
                 <input type="text" class="form-control" id="question_text" name="question_text"  placeholder="请输入问题" th:value="${question_text}"/>
-                <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                
+                <small class="form-text text-muted" th:if="${question_text}">"<span  th:text="${question_text}"></span>"正在爬取</small>
             </div>
             <button type="submit" class="btn btn-primary">爬取</button>
 <!--            <a type="button" id="show_content" class="btn btn-primary">显示结果</a>-->
 
         </form>
-        <div th:if="${question_text}">"<span  th:text="${question_text}"></span>"正在爬取</div>
+
         <div th:if="${content}">
             更多数据请再次点击爬取！
             <div class="panel panel-default">

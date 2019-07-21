@@ -43,15 +43,14 @@ public class AdvanceSearchController {
             if(list.size() == 0 || list.size()<3) {
                 try {
                     spiderSearch.searchByKey(key); //抓取
-
                 } catch (UnsupportedEncodingException e) {
-
+                    e.printStackTrace();
                 }
-
             }
             SearchItem unreadSearchItem = advanceSearchService.getUnreadSearchItem(key);
             map.put("content",unreadSearchItem);
             map.put("question_text",key);
+            System.out.println("key:: "+key);
 
             return "index";
         }
@@ -62,10 +61,10 @@ public class AdvanceSearchController {
             System.out.println("--"+(System.currentTimeMillis()-t));
             SearchItem unreadSearchItem = advanceSearchService.getUnreadSearchItem(key);
             map.put("content",unreadSearchItem);
+            map.put("question_text",key);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return "index";
     }
 
