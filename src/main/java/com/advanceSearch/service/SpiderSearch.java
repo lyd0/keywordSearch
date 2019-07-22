@@ -149,15 +149,12 @@ public class SpiderSearch {
 
 
 		String url=sb.toString();
-		System.out.println("sb: " + url);
+
 
 		try {
 			Document doc= HttpUtils.fetchDoc(url);
 			Elements itemEls=doc.select(eRule.itemCSS);
 			int resultNum = 0;
-
-//			System.out.print(doc);
-//			System.out.println(itemEls);
 
 			for(Element element: itemEls) {
 				long t = System.currentTimeMillis();
@@ -167,6 +164,10 @@ public class SpiderSearch {
 				}
 				String title = element_a.text().trim();
 				String link = element_a.attr("href");
+				//处理url
+				if(link.startsWith("/")) {
+					link = "http://www.sogou.com" + link;
+				}
 				String content = null;
 				Element element_p = element.select(eRule.contentCSS).first();
 				if(element_p == null) {
@@ -179,7 +180,7 @@ public class SpiderSearch {
 				searchItem.setContent(content);
 				searchItem.setUrl(link);
 				searchItem.setSearchKey(keyword);
-				System.out.println("解析完一个消耗时间：："+(System.currentTimeMillis()-t));
+
 				//此处添加数据库相关操作
 				advanceSearchService.addSearchItem(searchItem);
 				searchItems.add(searchItem);

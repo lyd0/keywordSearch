@@ -10,40 +10,68 @@
     <script th:src="@{/webjars/jquery/3.1.1/jquery.min.js}"></script>
     <script th:src="@{/webjars/bootstrap/3.3.7-1/js/bootstrap.min.js}"></script>
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/3.3.7-1/css/bootstrap.min.css}" />
+    <style>
+        body,html {
+            background-color: #EFF1F4;
+        }
+        .navbar {
+            background-color: #fff;
+        }
+        h2 {
+
+            text-align: center;
+        }
+        .container {
+            padding: 30px;
+            width: 80%;
+            background-color: #ffffff;
+        }
+        span.question {
+            padding: 20px;
+            padding-left: 0;
+            font-size: 16px;
+            display: block;
+        }
+        form {
+
+        }
+    </style>
 </head>
 <body>
     <nav th:replace="~{commons/bars::topNavBar}"></nav>
     <div class="container">
+        <div><span class="question">请输入问题：</span></div>
         <form action="/views/advanceSearch" method="POST">
             <div class="form-group">
-                <label for="question_text">请输入问题</label>
+
                 <input type="text" class="form-control" id="question_text" name="question_text"  placeholder="请输入问题" th:value="${question_text}"/>
                 
-                <small class="form-text text-muted" th:if="${question_text}">"<span  th:text="${question_text}"></span>"正在爬取</small>
+                <small class="form-text text-muted" th:if="${question_text}">"<span  th:text="${question_text}"></span>"正在爬取......</small>
             </div>
             <button type="submit" class="btn btn-primary">爬取</button>
 <!--            <a type="button" id="show_content" class="btn btn-primary">显示结果</a>-->
 
         </form>
 
-        <div th:if="${content}">
-            更多数据请再次点击爬取！
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title" th:text="${content.content}">
 
-                    </h3>
-                    <h3 class="panel-title" th:text="${content.url}"></h3>
-                </div>
-                <div class="panel-body">
-                    <iframe th:src="${content.url}" width="100%" height="800"></iframe>
-                </div>
-            </div>
-        </div>
 
 
     </div>
 
+    <div th:if="${content}" style="background-color: #fff; margin-top: 20px" class="container">
+        更多数据请再次点击爬取！
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4>简介：</h4>
+                <span  th:text="${content.content}"></span>
+                <h4>网址：</h4>
+                <span th:text="${content.url}"></span>
+            </div>
+            <div class="panel-body">
+                <iframe th:src="${content.url}" width="100%" height="800"></iframe>
+            </div>
+        </div>
+    </div>
 
 
 </body>
