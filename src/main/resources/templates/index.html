@@ -5,7 +5,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Document</title>
+    <title>辅助系统</title>
 
     <script th:src="@{/webjars/jquery/3.1.1/jquery.min.js}"></script>
     <script th:src="@{/webjars/bootstrap/3.3.7-1/js/bootstrap.min.js}"></script>
@@ -46,20 +46,29 @@
 
                 <input type="text" class="form-control" id="question_text" name="question_text"  placeholder="请输入问题" th:value="${question_text}"/>
                 
-                <small class="form-text text-muted" th:if="${question_text}">"<span  th:text="${question_text}"></span>"正在爬取......</small>
+                <small class="form-text text-muted" th:if="${question_text}">"<span  th:text="${question_text}"></span>"正在搜索......</small>
             </div>
-            <button type="submit" class="btn btn-primary">爬取</button>
-<!--            <a type="button" id="show_content" class="btn btn-primary">显示结果</a>-->
-
+            <span id="search" class="btn btn-primary">搜索</span>
+            <span id="searchimg" class="btn btn-primary">搜图片</span>
         </form>
 
-
+        <script>
+            $("#search").on("click",function () {
+                $("form").trigger("submit");
+            })
+            $("#searchimg").on("click",function() {
+                var text = $("#question_text").val();
+                console.log(text)
+                $("#question_text").val(text + " 图片")
+                $("form").trigger("submit");
+            })
+        </script>
 
 
     </div>
 
     <div th:if="${content}" style="background-color: #fff; margin-top: 20px" class="container">
-        更多数据请再次点击爬取！
+        更多数据请再次点击搜索！
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4>简介：</h4>

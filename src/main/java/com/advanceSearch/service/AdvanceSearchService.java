@@ -28,10 +28,6 @@ public class AdvanceSearchService {
 		return addcount;
 	}
 
-//	public void addSearchItems(List<SearchItem> searchItems){
-//		advanceSearchDao.batchSearchItemList(searchItems);
-//	}
-
 	public List<SearchItem> findAllSearch(){
 		List<SearchItem> list = new ArrayList<SearchItem>();
 		list = advanceSearchDao.findAllSearch();
@@ -58,17 +54,12 @@ public class AdvanceSearchService {
 	 */
 	public List<SearchItem> query(String key){
 		List<SearchItem> list = new ArrayList<SearchItem>();
-//		int flag =1;
-//		if(flag != judgeKey(key)){
-//			return list;
-//		}
 		list = advanceSearchDao.findByKey(key);
 		return list;
 	}
 
 	//判断关键字是否已存在
 	public int judgeKey(String key){
-//		List<KeyWord> list = new ArrayList<KeyWord>();
 		KeyWord keyword = new KeyWord();
 		int flag = 1;
 		keyword = advanceSearchDao.findKey(key);

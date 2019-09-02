@@ -147,10 +147,7 @@ public class SpiderSearch {
 			e.printStackTrace();
 		}
 
-
 		String url=sb.toString();
-
-
 		try {
 			Document doc= HttpUtils.fetchDoc(url);
 			Elements itemEls=doc.select(eRule.itemCSS);

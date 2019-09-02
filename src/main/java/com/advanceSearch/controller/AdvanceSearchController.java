@@ -50,7 +50,7 @@ public class AdvanceSearchController {
             SearchItem unreadSearchItem = advanceSearchService.getUnreadSearchItem(key);
             map.put("content",unreadSearchItem);
             map.put("question_text",key);
-            System.out.println("key:: "+key);
+
 
             return "index";
         }
